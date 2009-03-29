@@ -27,7 +27,7 @@ use Test::Reporter;
 use vars qw(
     $VERSION $Grade $Package $No_comment $Automatic $Comment_text $Comment_file
     %Grades $CC $Report $Tempfile $Subject $Reporter $From $Dump $Perl_version
-    $Transport
+    $Transport @Transport_Args
 );
 
 $VERSION       = '1.5203';
@@ -71,24 +71,26 @@ sub usage {
     print "           [ -perl-version path_to_perl ]\n";
     print "           [ -dump | email-addresses ]\n";
     print "           [ -x transport ]\n";
+    print "           [ -transport-arg arg ... [ -transport_arg arg ] ]\n";
     print "  -g grade  Indicates the status of the tested package.\n";
     print "            Possible values for grade are:\n";
 
     for (keys %Grades) {
-        printf "              %-10s  %s\n", $_, $Grades{$_};
+        printf "              %-11s  %s\n", $_, $Grades{$_};
     }
 
-    print "  -from         Specify the From: address.\n";
-    print "  -t            Specify a short comment.\n";
-    print "  -f            Specify a file containing comments.\n";
-    print "  -p            Specify the name of the distribution tested\n";
-    print "                (e.g.: Test-Reporter-1.27).\n";
-    print "  -nc           No comment; you will not be prompted to comment on\n";
-    print "                the package.\n";
-    print "  -auto         Autosubmission (non-interactive); implies -nc.\n";
-    print "  -dump         Print the report instead of emailing it.\n";
-    print "  -perl-version Specify an alternate perl under which the distribution was tested.\n";
-    print "  -x            Specify a transport: Net::SMTP or Mail::Send.\n";
+    print "  -from          Specify the From: address.\n";
+    print "  -t             Specify a short comment.\n";
+    print "  -f             Specify a file containing comments.\n";
+    print "  -p             Specify the name of the distribution tested\n";
+    print "                 (e.g.: Test-Reporter-1.27).\n";
+    print "  -nc            No comment; you will not be prompted to comment on\n";
+    print "                 the package.\n";
+    print "  -auto          Autosubmission (non-interactive); implies -nc.\n";
+    print "  -dump          Print the report instead of emailing it.\n";
+    print "  -perl-version  Specify an alternate perl under which the distribution was tested.\n";
+    print "  -x             Specify a transport: Net::SMTP or Mail::Send.\n";
+    print "  -transport-arg Specify an argument for the transport.\n";
 
     exit 1;
 }
@@ -105,6 +107,7 @@ sub get_opts {
         'dump', \$Dump,
         'perl-version=s', \$Perl_version,
         'x=s',  \$Transport,
+        'transport-arg=s', \@Transport_Args,
     ) or usage();
 
     $CC         = join ' ', @ARGV;
@@ -113,7 +116,7 @@ sub get_opts {
 }
 
 sub set_transport {
-    $Reporter->transport($Transport);
+    $Reporter->transport($Transport, @Transport_Args);
 }
 
 sub check_opts {
@@ -290,6 +293,7 @@ cpan-testers project.  See B<http://www.cpantesters.org/> for details.
     cpantest -g grade [ -nc ] [ -auto ] [ -p package ]
              [ -t text | -f file ] [ email-addresses ]
              [ -x transport ]
+             [ -transport-arg arg ... [ -transport-arg arg ] ]
 
 =head1 OPTIONS
 
